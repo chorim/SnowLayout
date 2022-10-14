@@ -286,3 +286,45 @@ public extension UIView {
   
   var safeArea: SafeArea { SafeArea(self) }
 }
+
+// MARK: - Layout Builder
+public protocol SnowLayoutAnchorGroup {
+  var constraints: [NSLayoutConstraint] { get }
+}
+
+extension NSLayoutConstraint: SnowLayoutAnchorGroup {
+  public var constraints: [NSLayoutConstraint] { [self] }
+}
+
+extension Array: SnowLayoutAnchorGroup where Element == NSLayoutConstraint {
+  public var constraints: [NSLayoutConstraint] { self }
+}
+
+@resultBuilder
+public struct SnowLayoutAnchorBuilder {
+  public static func buildBlock(_ components: SnowLayoutAnchorGroup...) -> [NSLayoutConstraint] {
+    return components.flatMap { $0.constraints }
+  }
+  
+  public static func buildOptional(_ component: [SnowLayoutAnchorGroup]?) -> [NSLayoutConstraint] {
+    return component?.flatMap { $0.constraints } ?? []
+  }
+  
+  public static func buildEither(first component: [SnowLayoutAnchorGroup]) -> [NSLayoutConstraint] {
+    return component.flatMap { $0.constraints }
+  }
+  
+  public static func buildEither(second component: [SnowLayoutAnchorGroup]) -> [NSLayoutConstraint] {
+    return component.flatMap { $0.constraints }
+  }
+}
+
+public extension UIViewController {
+  func activateConstraints(@SnowLayoutAnchorBuilder constraints: () -> [NSLayoutConstraint]) {
+    NSLayoutConstraint.activate(constraints())
+  }
+  
+  func deactivateConstraints(@SnowLayoutAnchorBuilder constraints: () -> [NSLayoutConstraint]) {
+    NSLayoutConstraint.deactivate(constraints())
+  }
+}
