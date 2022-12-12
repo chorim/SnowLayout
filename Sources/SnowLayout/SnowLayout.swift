@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 // MARK: - Precedence Group
@@ -328,3 +329,4 @@ public extension UIViewController {
     NSLayoutConstraint.deactivate(constraints())
   }
 }
+#endif
